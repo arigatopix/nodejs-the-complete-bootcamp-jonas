@@ -53,6 +53,53 @@ const superagent = require('superagent');
  * 43. Building Promises
  */
 
+// // create Read Promises object เพื่อ handle .then .catch
+// const readFilePromises = (file) => {
+//   return new Promise((resolve, reject) => {
+//     fs.readFile(file, (err, data) => {
+//       //rejected
+//       if (err) reject('I could not find that file :(');
+
+//       // fullfilled
+//       resolve(data);
+//     });
+//   });
+// };
+
+// // create Write Promises
+// const writeFilePromises = (file, res) => {
+//   return new Promise((resolve, reject) => {
+//     fs.writeFile(file, res, (err) => {
+//       if (err) reject('Could not write file :(');
+
+//       resolve('success');
+//     });
+//   });
+// };
+
+// // Execute Promises chain
+// readFilePromises(`${__dirname}/dog.txt`)
+//   .then((data) => {
+//     console.log(`Breed: ${data}`);
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+//   })
+//   .then((res) => {
+//     // resolved Promises object
+//     console.log(res.body.message);
+
+//     // write to file
+//     return writeFilePromises(`${__dirname}/dog-img.txt`, res.body.message);
+//   })
+//   .then(console.log(`Random dog image save to file...`))
+//   .catch((err) => {
+//     // rejected error
+//     console.log(err);
+//   });
+
+/* ****************
+ * 44. Consuming Promises with Async/Await
+ */
+
 // create Read Promises object เพื่อ handle .then .catch
 const readFilePromises = (file) => {
   return new Promise((resolve, reject) => {
@@ -77,21 +124,24 @@ const writeFilePromises = (file, res) => {
   });
 };
 
-// Execute Promises chain
-readFilePromises(`${__dirname}/dog.txt`)
-  .then((data) => {
+const getRandomPicture = async () => {
+  try {
+    // readFile from txt เป็น Promises
+    const data = await readFilePromises(`${__dirname}/dog.txt`);
     console.log(`Breed: ${data}`);
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
-  })
-  .then((res) => {
-    // resolved Promises object
+
+    // fetch data from API
+    const res = await await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
     console.log(res.body.message);
 
-    // write to file
-    return writeFilePromises(`${__dirname}/dog-img.txt`, res.body.message);
-  })
-  .then(console.log(`Random dog image save to file...`))
-  .catch((err) => {
-    // rejected error
+    // writeFile แบบ Promises
+    await writeFilePromises(`${__dirname}/dog-img.txt`, res.body.message);
+  } catch (err) {
     console.log(err);
-  });
+  }
+};
+
+// Execute function
+getRandomPicture();
