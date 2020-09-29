@@ -1,0 +1,16 @@
+{
+  "name": "section-05-promises-async-await",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.4",
+    "superagent": "^6.1.0"
+  }
+}
