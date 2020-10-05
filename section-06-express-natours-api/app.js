@@ -1,15 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-
-const tourRoutes = require('./routes/tourRoutes');
-const userRoutes = require('./routes/userRoutes');
-
 const config = require('./config');
 
 const app = express();
 
+// Mount Route
+const tourRoutes = require('./routes/tourRoutes');
+const userRoutes = require('./routes/userRoutes');
+
+// Middleware
 app.use(bodyParser.json());
+app.use(express.static(`${__dirname}/public/`));
 
 app.use(morgan('dev'));
 
