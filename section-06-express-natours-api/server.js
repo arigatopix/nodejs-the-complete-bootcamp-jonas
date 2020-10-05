@@ -1,7 +1,8 @@
-const app = require('./app')
+const app = require('./app');
+const config = require('./config');
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.port || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Sever running on port : ${PORT}`)
-})
+  console.log(`Sever running on port : ${PORT}`);
+});

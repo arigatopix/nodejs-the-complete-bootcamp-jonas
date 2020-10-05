@@ -13,7 +13,9 @@ const userRoutes = require('./routes/userRoutes');
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public/`));
 
-app.use(morgan('dev'));
+if (config.env === 'development') {
+  app.use(morgan('dev'));
+}
 
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
