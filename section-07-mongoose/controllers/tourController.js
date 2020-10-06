@@ -53,13 +53,27 @@ exports.createTour = async (req, res) => {
   }
 };
 
-exports.updateTour = (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: {
-      tour: '<Updated tour here...>'
-    }
-  });
+exports.updateTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!tour) throw new Error('resource not found');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        tour
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      data: err
+    });
+  }
 };
 
 exports.deleteTour = (req, res) => {
