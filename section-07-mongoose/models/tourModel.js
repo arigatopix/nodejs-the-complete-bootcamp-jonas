@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'A tour much have a name'],
+    required: [true, 'A tour must have a name'],
     unique: true,
     trim: true
   },
   duration: {
     type: String,
-    required: [true, 'A tour mus have a duration']
+    required: [true, 'A tour must have a duration']
   },
   maxGroupSize: {
     type: Number,
