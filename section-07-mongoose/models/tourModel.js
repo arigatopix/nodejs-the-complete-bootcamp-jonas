@@ -105,4 +105,15 @@ tourSchema.post(/^find/, function(docs, next) {
   next();
 });
 
+// AGGREGATE MIDDLEWARE
+tourSchema.pre('aggregate', function(next) {
+  // filter secretTour: true
+  // เมื่อ run aggregate()
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } }
+  });
+
+  next();
+});
+
 module.exports = mongoose.model('Tour', tourSchema);
