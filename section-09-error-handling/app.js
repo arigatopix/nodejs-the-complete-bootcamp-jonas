@@ -20,4 +20,12 @@ if (config.env === 'development') {
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
 
+// Handling Unhandle Routes
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't find ${req.originalUrl} on this server`
+  });
+});
+
 module.exports = app;
