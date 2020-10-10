@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./config');
 
+// Global uncaughtException Error
+process.on('uncaughtException', err => {
+  console.log(err.name, err.message);
+  console.log('UNCAUGHT REJECTION! : Shutting Down...');
+
+  process.exit(1);
+});
+
 // connect DB
 (async () => {
   await mongoose.connect(config.mongoURI, {
