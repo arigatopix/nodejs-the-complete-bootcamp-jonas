@@ -23,12 +23,19 @@ const handleValidatorErrorDB = err => {
   return new AppError(`${message}`, 400);
 };
 
+// Handle JSON Web Token Error
+const handleJWTError = () => {
+  // join value in array
+  const message = `Invalid token. Please log in again`;
+  return new AppError(`${message}`, 401);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
+    error: err,
     stack: err.stack,
-    error: err
   });
 };
 
@@ -37,7 +44,7 @@ const sendErrorProd = (err, res) => {
   if (err.isOperatioal) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      message: err.message,
     });
   } else {
     // Programming or other unknwn error: don't leak error details
@@ -47,7 +54,7 @@ const sendErrorProd = (err, res) => {
     // 2) Send generic message
     res.status(500).json({
       status: 'error',
-      message: 'Somthing went very wrong!'
+      message: 'Somthing went very wrong!',
     });
   }
 };
@@ -64,15 +71,17 @@ module.exports = (err, req, res, next) => {
     // copy err obj.
     let error = { ...err };
 
-    // console.log(err);
-
     // MongoDB and mongoose Error
     // เมื่อเจออาการ CastError
     if (err.name === 'CastError') error = handleCastErrorDB(err);
     // Duplicate fields
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
     // ValidationError
-    if (err.name === 'ValidationError') error = handleValidatorErrorDB(err);
+    if (err.name === 'ValidationError')
+      error = handleValidatorErrorDB(err);
+
+    // JWT error
+    if (err.name === 'JsonWebTokenError') error = handleJWTError();
 
     sendErrorProd(error, res);
   }

@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const User = require('../models/userModel');
@@ -72,4 +73,33 @@ exports.login = catchAsync(async (req, res, next) => {
       token,
     },
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check if it's there
+  if (
+    !req.headers.authorization ||
+    !req.headers.authorization.startsWith('Bearer')
+  ) {
+    return next(
+      new AppError(
+        'You are not logged in! Please log in to get access',
+        401,
+      ),
+    );
+  }
+  const token = req.headers.authorization.split(' ')[1];
+
+  // 2) Verification token
+  const decoded = await promisify(jwt.verify)(
+    token,
+    config.jwt.secret,
+  );
+
+  // 3) Check if user still exists
+  console.log(decoded);
+
+  // 4) Check if user changed password after the token was issued
+
+  next();
 });
