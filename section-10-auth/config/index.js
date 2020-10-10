@@ -20,6 +20,12 @@ module.exports = {
    * MONGODB Connection */
   mongoURI: process.env.MONGO_URI,
   /**
+   * JWT Secret */
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  },
+  /**
    * API configs */
   api: {
     prefix: '/api'

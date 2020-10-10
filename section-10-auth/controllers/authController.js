@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken')
+const config = require('../config')
 const User = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
@@ -13,13 +15,18 @@ exports.signup = catchAsync(async (req, res, next) => {
     name,
     email,
     password,
-    passwordConfirm
+    passwordConfirm,
+  });
+
+  // create token
+  const token = jwt.sign({ id: newUser._id }, config.jwt.secret, {
+    expiresIn: config.jwt.expiresIn,
   });
 
   res.status(200).json({
     status: 'success',
     data: {
-      user: newUser
+      token,
     }
   });
 });
