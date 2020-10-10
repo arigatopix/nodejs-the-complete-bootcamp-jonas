@@ -120,3 +120,22 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // รับมาเป็น array จาก route
+    // เป็น function ซ้อน เพราะ middleware ปกติ
+    // จะรับ arg จาก middleware ไม่ได้ จึงต้องใช้ closures
+    if (!roles.includes(req.user.role)) {
+      // check req.user.role ว่าตรงกับ roles ที่จำกัดมั้ย
+      return next(
+        new AppError(
+          'You do not have permission to perform this action',
+          403,
+        ),
+      );
+    }
+
+    next();
+  };
+};
