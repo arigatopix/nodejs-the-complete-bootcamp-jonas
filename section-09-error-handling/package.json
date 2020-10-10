@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon",
-    "start:prod": "NODE_ENV=production node server.js",
+    "start:prod": "nodemon server.js NODE_ENV=production ",
     "debug": "ndb server.js"
   },
   "author": "Teeruch Kaewsritas",

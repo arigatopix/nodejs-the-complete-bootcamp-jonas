@@ -1,6 +1,13 @@
 const config = require('../config');
+const AppError = require('../utils/appError');
 
-const sendErrorDev = (res, err) => {
+// Handle MongoDB Error
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+};
+
+const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -9,7 +16,7 @@ const sendErrorDev = (res, err) => {
   });
 };
 
-const sendErrorProd = (res, err) => {
+const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   if (err.isOperatioal) {
     res.status(err.statusCode).json({
@@ -36,8 +43,14 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (config.env === 'development') {
-    sendErrorDev(res, err);
+    sendErrorDev(err, res);
   } else if (config.env === 'production') {
-    sendErrorProd(res, err);
+    // copy err obj.
+    let error = { ...err };
+
+    // เมื่อเจออาการ CastError
+    if (err.name === 'CastError') error = handleCastErrorDB(err);
+
+    sendErrorProd(error, res);
   }
 };
