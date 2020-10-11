@@ -64,6 +64,7 @@ userSchema.pre('save', function(next) {
   if (!this.isModified('password') || !this.isNew) next();
 
   this.passwordChangedAt = Date.now() - 1000;
+  next();
 });
 
 // check isMatch password

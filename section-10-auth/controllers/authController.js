@@ -14,6 +14,18 @@ const signToken = id => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 // @desc    Sign up new user
 // @route   POST /api/v1/users/signup
 // @access  Public
@@ -28,12 +40,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 
   // create token
-  const token = signToken(user._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 201, res);
 });
 
 // @desc    Log user in
@@ -65,12 +72,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // if everything ok, send token to client
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 // @desc    Forgot Password
@@ -159,12 +161,34 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  const token = signToken(user._id);
+  createSendToken(user, 200, res);
+});
 
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+// @desc    Update Password
+// @route   PATCH /api/v1/users/updateepassword
+// @access  Private
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  // ! อย่าลืมเอา select password
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2) Check if POSTed current password is correct
+  const isMatchedPassword = await user.correctPassword(
+    req.body.currentPassword,
+  );
+
+  if (!isMatchedPassword) {
+    return next(new AppError('Incorrect password', 401));
+  }
+
+  // 3) If so, update password
+  // User.findByIdAndUpdate() will NOT work as intended
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // 4) Log user in, send JWT
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
