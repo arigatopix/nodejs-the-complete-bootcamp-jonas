@@ -59,6 +59,13 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+// update passwordChangedAt field
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || !this.isNew) next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+});
+
 // check isMatch password
 userSchema.methods.correctPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
@@ -70,7 +77,7 @@ userSchema.methods.changedPasswordAfterCreatedToken = function(
 ) {
   if (this.passwordChangedAt) {
     const changedPasswordTimestamp = parseInt(
-      this.passwordChangedAt.getTime(),
+      this.passwordChangedAt.getTime() / 1000,
       10,
     );
 
