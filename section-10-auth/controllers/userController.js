@@ -15,6 +15,20 @@ const filterObj = (obj, ...allowedFileds) => {
   return newObj;
 };
 
+// @desc    Delete User
+// @route   PATCH /api/v1/users/deleteMe
+// @access  Private
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {
+    isActive: false,
+  });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 // @desc    Update user detail
 // @route   PATCH /api/v1/users/updateMe
 // @access  Private

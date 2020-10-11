@@ -44,6 +44,17 @@ const userSchema = new mongoose.Schema({
   },
   passwordResetToken: String,
   passwordResetExpires: Date,
+  isActive: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+});
+
+// filter user isActive : false ออกจาก api
+userSchema.pre(/^find/, function(next) {
+  this.find({ isActive: { $ne: false } });
+  next();
 });
 
 // encrypt password
