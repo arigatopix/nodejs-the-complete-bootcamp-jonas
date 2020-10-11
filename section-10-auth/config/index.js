@@ -26,8 +26,16 @@ module.exports = {
     expiresIn: process.env.JWT_EXPIRES_IN,
   },
   /**
+   * Send mail */
+  email: {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER,
+    password: process.env.EMAIL_PASSWORD,
+  },
+  /**
    * API configs */
   api: {
-    prefix: '/api'
-  }
+    prefix: '/api',
+  },
 };

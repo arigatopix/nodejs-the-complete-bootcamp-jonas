@@ -4,6 +4,7 @@ const config = require('../config');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/sendEmail');
 
 // Generate Token
 const signToken = id => {
@@ -96,11 +97,40 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3) Send if to user's email
+  const resetURL = `${req.protocol}://${req.get(
+    'host',
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}.\nIf you didn't forget your password, please ignore thes email!`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'You password reset token (valid for 10 min)',
+      message,
+    });
+  } catch (err) {
+    // กรณีส่ง email ไม่สำเร็จ
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError(
+        'There was an error sending email. Try again letter!',
+        500,
+      ),
+    );
+  }
 
   res.status(200).json({
     status: 'success',
-    resetToken,
+    message: 'Token sent to email',
   });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  next();
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
