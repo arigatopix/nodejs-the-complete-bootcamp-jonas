@@ -15,7 +15,7 @@ module.exports = class APIFeatures {
     // 2) Advanced Filtering
     queryStr = queryStr.replace(
       /\b(gte|gt|lte|lt|in)\b/g,
-      match => `$${match}`
+      match => `$${match}`,
     );
 
     // fetch data from mongoDB
