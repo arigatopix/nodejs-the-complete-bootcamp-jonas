@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const config = require('./config');
@@ -7,21 +8,22 @@ const config = require('./config');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
-const app = express();
-
 // Mount Route
 const tourRoutes = require('./routes/tourRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-// Middleware
-app.use(bodyParser.json());
-app.use(express.static(`${__dirname}/public/`));
+const app = express();
 
+// GLOBAL MIDDLEWARES
+// Set sucurity HTTP Headers
+app.use(helmet());
+
+// Development Logging
 if (config.env === 'development') {
   app.use(morgan('dev'));
 }
 
-// Rate limiter 15 นาที / 100 request
+// Rate limiter 15 นาที / 100 request from same API
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
@@ -30,6 +32,10 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
+
+// Body parser, reading data from body into req.body
+app.use(bodyParser.json({ limit: '10kb' }));
+app.use(express.static(`${__dirname}/public/`));
 
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
