@@ -71,6 +71,38 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc    Forgot Password
+// @route   POST /api/v1/users/forgotpassword
+// @access  Public
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new AppError(`Please provide email`), 400);
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(
+      new AppError(`There is no user with email address`),
+      404,
+    );
+  }
+
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  // 3) Send if to user's email
+
+  res.status(200).json({
+    status: 'success',
+    resetToken,
+  });
+});
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   if (
