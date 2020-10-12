@@ -2,7 +2,13 @@ const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
 
+// Include other resource routers
+const reviewRoutes = require('./reviewRoutes');
+
 const router = express.Router();
+
+// *Re-Route into other resource routers
+router.use('/:tourId/reviews', reviewRoutes);
 
 router
   .route('/top-5-cheap')

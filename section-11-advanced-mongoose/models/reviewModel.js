@@ -32,4 +32,4 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
-module.exports = reviewSchema.model('Review', reviewSchema);
+module.exports = mongoose.model('Review', reviewSchema);
