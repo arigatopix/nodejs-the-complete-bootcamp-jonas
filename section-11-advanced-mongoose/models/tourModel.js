@@ -109,7 +109,12 @@ const tourSchema = new mongoose.Schema(
         description: String,
       },
     ],
-    guides: Array,
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        re: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -128,15 +133,15 @@ tourSchema.pre('save', function(next) {
 });
 
 // ให้ดึงข้อมูลจาก User collection แล้ว save ลง Tour Collection
-tourSchema.pre('save', async function(next) {
-  const guidesPromiseArr = this.guides.map(
-    async id => await User.findById(id),
-  );
+// tourSchema.pre('save', async function(next) {
+//   const guidesPromiseArr = this.guides.map(
+//     async id => await User.findById(id),
+//   );
 
-  this.guides = await Promise.all(guidesPromiseArr);
+//   this.guides = await Promise.all(guidesPromiseArr);
 
-  next();
-});
+//   next();
+// });
 
 // tourSchema.pre('save', function(next) {
 //   console.log('Will save document...');
