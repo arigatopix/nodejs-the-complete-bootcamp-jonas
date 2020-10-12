@@ -73,8 +73,6 @@ exports.createReview = catchAsync(async (req, res, next) => {
     user,
   });
 
-  console.log(newReview);
-
   if (!newReview) {
     return next(new AppError('Create review do not success', 400));
   }
