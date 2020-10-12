@@ -12,14 +12,14 @@ const Tour = require('./models/tourModel');
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
   console.log('Database Connected');
 })();
 
 // read-json file
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf8')
+  fs.readFileSync(`${__dirname}/dev-data/data/tours.json`, 'utf8'),
 );
 
 // Import data to database

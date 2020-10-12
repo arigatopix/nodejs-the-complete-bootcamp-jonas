@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
+// const validator = require('validator');
 
 // Create simple Tour Model
 const tourSchema = new mongoose.Schema(
@@ -10,40 +10,46 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
-      maxlength: [40, 'A tour name must have less or equal then 40 characters'],
-      minlength: [10, 'A tour name must have more or equal then 10 characters']
+      maxlength: [
+        40,
+        'A tour name must have less or equal then 40 characters',
+      ],
+      minlength: [
+        10,
+        'A tour name must have more or equal then 10 characters',
+      ],
       // validate: [validator.isAlpha, 'A tour name must only contain characters']
     },
     slug: String,
     duration: {
       type: Number,
-      required: [true, 'A tour must have a duration']
+      required: [true, 'A tour must have a duration'],
     },
     maxGroupSize: {
       type: Number,
-      required: [true, 'A tour must have a group size']
+      required: [true, 'A tour must have a group size'],
     },
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
       enum: {
         values: ['easy', 'medium', 'difficult'],
-        message: 'Difficulty is either: easy, medium, difficult'
-      }
+        message: 'Difficulty is either: easy, medium, difficult',
+      },
     },
     ratingsAverage: {
       type: Number,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
-      default: 4.5
+      default: 4.5,
     },
     ratingsQuantity: {
       type: Number,
-      default: 0
+      default: 0,
     },
     price: {
       type: Number,
-      required: [true, 'A tour much have a price']
+      required: [true, 'A tour much have a price'],
     },
     priceDiscount: {
       type: Number,
@@ -52,38 +58,61 @@ const tourSchema = new mongoose.Schema(
           // this only points to current doc on NEW document creation
           return val < this.price;
         },
-        message: 'Discount price ({VALUE}) should be below regular price'
-      }
+        message:
+          'Discount price ({VALUE}) should be below regular price',
+      },
     },
     summary: {
       type: String,
       required: [true, 'A tour must have a description'],
-      trim: true
+      trim: true,
     },
     description: {
       type: String,
-      trim: true
+      trim: true,
     },
     imageCover: {
       type: String,
-      required: [true, 'A tour must have a cover image']
+      required: [true, 'A tour must have a cover image'],
     },
     images: [String],
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false
+      select: false,
     },
     startDates: [Date],
     secretTour: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      description: String,
+      address: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        day: Number,
+        description: String,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  }
+    toObject: { virtuals: true },
+  },
 );
 
 tourSchema.virtual('durationWeeks').get(function() {
@@ -127,7 +156,7 @@ tourSchema.pre('aggregate', function(next) {
   // filter secretTour: true
   // เมื่อ run aggregate()
   this.pipeline().unshift({
-    $match: { secretTour: { $ne: true } }
+    $match: { secretTour: { $ne: true } },
   });
 
   next();
