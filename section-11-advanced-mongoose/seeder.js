@@ -6,6 +6,7 @@ const config = require('./config');
 // Load Model
 const Tour = require('./models/tourModel');
 const Review = require('./models/reviewModel');
+const User = require('./models/userModel');
 
 // connectDB
 (async () => {
@@ -27,12 +28,17 @@ const reviews = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/reviews.json`, 'utf8'),
 );
 
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/users.json`, 'utf8'),
+);
+
 // Import data to database
 const importData = async () => {
   try {
     // console.log(tours);
-    // await Tour.create(tours);
+    await Tour.create(tours);
     await Review.create(reviews);
+    await User.create(users, { validateBeforeSave: false });
     console.log('Data successfully loaded!');
     process.exit();
   } catch (err) {
@@ -44,8 +50,9 @@ const importData = async () => {
 // Delete data from database
 const removeData = async () => {
   try {
-    // await Tour.deleteMany();
+    await Tour.deleteMany();
     await Review.deleteMany();
+    await User.deleteMany();
     console.log('Data successfully deleted!');
     process.exit();
   } catch (err) {

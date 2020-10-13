@@ -17,6 +17,7 @@ exports.getAll = Model => {
       .paginate();
 
     // EXECUTE Query
+    // const tours = await features.query.explain();
     const tours = await features.query;
 
     // SEND Response
