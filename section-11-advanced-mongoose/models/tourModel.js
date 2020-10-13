@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-// const validator = require('validator');
-const User = require('./userModel');
 
 // Create simple Tour Model
 const tourSchema = new mongoose.Schema(
@@ -43,6 +41,7 @@ const tourSchema = new mongoose.Schema(
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
       default: 4.5,
+      set: val => Math.round(val * 100) / 100,
     },
     ratingsQuantity: {
       type: Number,
