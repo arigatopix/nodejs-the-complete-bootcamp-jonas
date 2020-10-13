@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -31,6 +32,37 @@ const reviewSchema = new mongoose.Schema(
     toJSON: { virtuals: true },
   },
 );
+
+// STATICS use for model constructor
+reviewSchema.statics.calcAverage = async function(tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+
+  // save to Tour model
+  await Tour.findByIdAndUpdate(
+    { _id: tourId },
+    {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    },
+  );
+};
+
+reviewSchema.post('save', function() {
+  // this.constructor === Model { Review }
+  // ใช้เรียก statics method
+  this.constructor.calcAverage(this.tour);
+});
 
 // Populate user and tour fields when query
 reviewSchema.pre(/^find/, function(next) {
