@@ -5,9 +5,14 @@ const AppError = require('../utils/appError');
 
 // @desc    Get all reviews
 // @route   GET /api/v1/reviews/
+// @route   GET /api/v1/tours/:tourId/reviews
 // @access  Public
 exports.getAllReviews = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Review.find(), req.query)
+  // Find reviews by Tour ID
+  let tourFilter = {};
+  if (req.params.tourId) tourFilter = { tour: req.params.tourId };
+
+  const features = new APIFeatures(Review.find(tourFilter), req.query)
     .filter()
     .sort()
     .limitFields()
