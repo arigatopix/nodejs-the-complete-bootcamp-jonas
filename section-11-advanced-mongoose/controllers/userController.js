@@ -16,6 +16,14 @@ const filterObj = (obj, ...allowedFileds) => {
   return newObj;
 };
 
+// @desc    Get Me
+// @route   GET /api/v1/users/getme
+// @access  Private
+exports.getMe = catchAsync(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+});
+
 // @desc    Delete User
 // @route   PATCH /api/v1/users/deleteMe
 // @access  Private

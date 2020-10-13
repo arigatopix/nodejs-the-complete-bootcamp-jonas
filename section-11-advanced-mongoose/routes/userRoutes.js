@@ -11,6 +11,14 @@ router.route('/login').post(authController.login);
 router.route('/forgotpassword').post(authController.forgotPassword);
 
 router
+  .route('/getMe')
+  .get(
+    authController.protect,
+    userController.getMe,
+    userController.getUser,
+  );
+
+router
   .route('/updateMe')
   .patch(authController.protect, userController.updateMe);
 
