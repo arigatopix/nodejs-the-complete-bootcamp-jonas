@@ -1,5 +1,4 @@
 const User = require('../models/userModel');
-const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
@@ -8,6 +7,7 @@ const filterObj = (obj, ...allowedFileds) => {
   // obj = req.body = { name: 'j', email: 'ee@gmail.com', role: 'admin'}
   const newObj = {};
 
+  // eslint-disable-next-line array-callback-return
   Object.keys(obj).map(el => {
     if (allowedFileds.includes(el)) {
       newObj[el] = obj[el];
@@ -70,28 +70,12 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 // @desc    Get all users
 // @route   GET /api/v1/users
 // @access  Private
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const users = await features.query;
+exports.getAllUsers = factory.getAll(User);
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      users,
-    },
-  });
-});
-
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
-};
+// @desc    Get User
+// @route   GET /api/v1/users/:id
+// @access  Private/Admin
+exports.getUser = factory.getOne(User);
 
 // @desc    Create User
 // @route   POST /api/v1/users
