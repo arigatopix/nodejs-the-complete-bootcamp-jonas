@@ -18,14 +18,14 @@ exports.getAll = Model => {
 
     // EXECUTE Query
     // const tours = await features.query.explain();
-    const tours = await features.query;
+    const resources = await features.query;
 
     // SEND Response
     res.status(200).json({
       status: 'success',
-      results: tours.length,
+      results: resources.length,
       data: {
-        tours,
+        data: resources,
       },
     });
   });

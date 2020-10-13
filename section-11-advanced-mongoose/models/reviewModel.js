@@ -34,7 +34,7 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // STATICS use for model constructor
-reviewSchema.statics.calcAverage = async function(tourId) {
+reviewSchema.statics.calcAverageRatings = async function(tourId) {
   const stats = await this.aggregate([
     {
       $match: { tour: tourId },
@@ -48,20 +48,47 @@ reviewSchema.statics.calcAverage = async function(tourId) {
     },
   ]);
 
-  // save to Tour model
-  await Tour.findByIdAndUpdate(
-    { _id: tourId },
-    {
-      ratingsQuantity: stats[0].nRating,
-      ratingsAverage: stats[0].avgRating,
-    },
-  );
+  if (stats.length > 0) {
+    // save to Tour model
+    await Tour.findByIdAndUpdate(
+      { _id: tourId },
+      {
+        ratingsQuantity: stats[0].nRating,
+        ratingsAverage: stats[0].avgRating,
+      },
+    );
+  } else {
+    // กรณีไม่มี review อยุ่เลย
+    await Tour.findByIdAndUpdate(
+      { _id: tourId },
+      {
+        ratingsQuantity: 0,
+        ratingsAverage: 4.5,
+      },
+    );
+  }
 };
 
 reviewSchema.post('save', function() {
   // this.constructor === Model { Review }
   // ใช้เรียก statics method
-  this.constructor.calcAverage(this.tour);
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+// findByIdAndUpdate
+// findByIdAndDelete
+// ใช้ findOneAndUpdate ,findOneAndDelete เพื่อ trigger middleware
+reviewSchema.pre(/^findOneAnd/, async function(next) {
+  this.r = await this.findOne(); // currnt document
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function() {
+  // await this.findOne();  does NOT work hear, query has already executed
+
+  // รับ this.r จาก pre query
+  // execute statics ดึง tour id จาก this.r.tour
+  await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
 // Populate user and tour fields when query
