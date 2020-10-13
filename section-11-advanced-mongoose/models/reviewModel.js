@@ -35,12 +35,17 @@ const reviewSchema = new mongoose.Schema(
 // Populate user and tour fields when query
 reviewSchema.pre(/^find/, function(next) {
   // REMEMBER query 2 ต่อ
+  // this.populate({
+  //   path: 'user',
+  //   select: 'name photo',
+  // }).populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // });
+
   this.populate({
     path: 'user',
     select: 'name photo',
-  }).populate({
-    path: 'tour',
-    select: 'name',
   });
   next();
 });

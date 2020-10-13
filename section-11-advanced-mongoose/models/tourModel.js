@@ -122,8 +122,15 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+// VIRTOUR FIELDS
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
+});
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  localField: '_id',
+  foreignField: 'tour',
 });
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
