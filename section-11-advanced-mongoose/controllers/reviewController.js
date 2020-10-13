@@ -56,15 +56,15 @@ exports.createReview = catchAsync(async (req, res, next) => {
   // take review, rating from clien
   const { review, rating } = req.body;
 
-  // take user from protect middlware
-  const user = req.user.id;
-
-  // take tour from url
-  const tour = req.params.tourId || req.body.tour;
-
   if (!review || !rating) {
     return next(new AppError('Review and Rating can not empty', 400));
   }
+
+  // take user from protect middlware
+  const user = req.body.user ? req.body.user : req.user.id;
+
+  // take tour from url
+  const tour = req.body.tour ? req.body.tour : req.params.tourId;
 
   const newReview = await Review.create({
     review,

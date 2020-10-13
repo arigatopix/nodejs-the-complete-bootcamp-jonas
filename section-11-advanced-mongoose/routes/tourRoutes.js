@@ -7,6 +7,9 @@ const reviewRoutes = require('./reviewRoutes');
 
 const router = express.Router();
 
+// POST tours/323e0d/reviews
+// GET tours/323e0d/reviews
+
 // *Re-Route into other resource routers
 router.use('/:tourId/reviews', reviewRoutes);
 
