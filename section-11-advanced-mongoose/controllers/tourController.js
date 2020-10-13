@@ -124,38 +124,15 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  // ใช้ method บน Model
-  const tour = await Tour.create(req.body);
+// @desc    Create User
+// @route   POST /api/v1/tours
+// @access  Private
+exports.createTour = factory.createOne(Tour);
 
-  res.status(201).json({
-    status: 'success',
-    data: tour,
-  });
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!tour) {
-    return next(
-      new AppError(
-        `No Tour found with that ID ${req.params.id}`,
-        404,
-      ),
-    );
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-});
+// @desc    Update Tour by id
+// @route   Patch /api/v1/tours/:id
+// @access  Private
+exports.updateTour = factory.updateOne(Tour);
 
 // @desc    Delete Tour by id
 // @route   DELETE /api/v1/tours/:id

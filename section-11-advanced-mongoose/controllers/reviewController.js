@@ -4,6 +4,14 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handleFactory');
 
+// Middleware Pass tourId and userId to Create review
+exports.setTourUserIds = (req, res, next) => {
+  // Allow nested routes
+  if (!req.body.user) req.body.user = req.user.id;
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  next();
+};
+
 // @desc    Get all reviews
 // @route   GET /api/v1/reviews/
 // @route   GET /api/v1/tours/:tourId/reviews
@@ -58,88 +66,14 @@ exports.getReview = catchAsync(async (req, res, next) => {
 // @route   POST /api/v1/reviews
 // @route   POST /api/v1/tours/:tourId/reviews
 // @access  Private
-exports.createReview = catchAsync(async (req, res, next) => {
-  // take review, rating from clien
-  const { review, rating } = req.body;
-
-  if (!review || !rating) {
-    return next(new AppError('Review and Rating can not empty', 400));
-  }
-
-  // take user from protect middlware
-  const user = req.body.user ? req.body.user : req.user.id;
-
-  // take tour from url
-  const tour = req.body.tour ? req.body.tour : req.params.tourId;
-
-  const newReview = await Review.create({
-    review,
-    rating,
-    tour,
-    user,
-  });
-
-  if (!newReview) {
-    return next(new AppError('Create review do not success', 400));
-  }
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      newReview,
-    },
-  });
-});
+exports.createReview = factory.createOne(Review);
 
 // @desc    Update review by id
 // @route   PATCH /api/v1/review/:id
 // @access  Private
-exports.updateReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
-
-  if (!review) {
-    return next(
-      new AppError(
-        `No Review found with that ID ${req.params.id}`,
-        404,
-      ),
-    );
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-});
+exports.updateReview = factory.updateOne(Review);
 
 // @desc    Delete review by id
 // @route   DELETE /api/v1/review/:id
 // @access  Private
 exports.deleteReview = factory.deleteOne(Review);
-
-// exports.deleteReview = catchAsync(async (req, res, next) => {
-//   const review = await Review.findByIdAndDelete(req.params.id);
-
-//   if (!review) {
-//     return next(
-//       new AppError(
-//         `No Review found with that ID ${req.params.id}`,
-//         404,
-//       ),
-//     );
-//   }
-
-//   res.status(200).json({
-//     status: 'success',
-//     data: {},
-//   });
-// });
