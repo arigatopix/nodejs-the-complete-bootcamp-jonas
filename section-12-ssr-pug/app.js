@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -18,7 +19,14 @@ const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 
+// View engin
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // GLOBAL MIDDLEWARES
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Set sucurity HTTP Headers
 app.use(helmet());
 
@@ -60,8 +68,13 @@ app.use(
   }),
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public/`));
+// Render template
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'Forest Hiker',
+    user: 'arigato',
+  });
+});
 
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
