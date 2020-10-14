@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handleFactory');
+const AppError = require('../utils/appError');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -9,6 +10,42 @@ exports.aliasTopTours = (req, res, next) => {
 
   next();
 };
+
+// @desc    Get tour around lat, long by distance
+// @route   GET api/v1/tour-within/:distance/center/:latlong/unit/:unit
+// @access  Public
+exports.getTourWithin = catchAsync(async (req, res, next) => {
+  // รับ distance, latlong, unit จาก params
+  const { distance, latlong, unit } = req.params;
+
+  const [lat, long] = latlong.split(',');
+
+  if (!lat || !long) {
+    return next(
+      new AppError(
+        'Please provide latitude and longtitude in the format lat,long',
+      ),
+      400,
+    );
+  }
+
+  // หา document ในรัศมี ใช้ { loc: {$geoWithin: { $centerSphere: [ [ <x>, <y> ], <radius> ] }}}
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6371;
+
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: { $centerSphere: [[long, lat], radius] },
+    },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
