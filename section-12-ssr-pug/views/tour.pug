@@ -39,11 +39,15 @@ block content
           
         .overview-box__group
           h2.heading-secondary.ma-bt-lg Your tour guides
-            //- each guide in tour.guides
-            //- .overview-box__detail
-            //-   img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.role}`)
-            //-   span.overview-box__label= guide.role
-            //-   span.overview-box__text= guide.name
+
+          each guide in tour.guides
+            .overview-box__detail
+              img.overview-box__img(src=`/img/users/${guide.photo}`, alt=`${guide.name}`)
+              - if (guide.role === 'lead-guide')
+                span.overview-box__label Lead Guide
+              - if (guide.role === 'guide')
+                span.overview-box__label Tour Guide
+              span.overview-box__text= guide.name
 
 
     .description-box
