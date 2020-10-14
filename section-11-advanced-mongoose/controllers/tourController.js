@@ -11,6 +11,54 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
+// @desc    Get Distances far from point
+// @route   GET api/v1/distances/:latlong/unit/:unit
+// @access  Public
+exports.getDistances = catchAsync(async (req, res, next) => {
+  // รับ latlong, unit จาก params
+  const { latlong, unit } = req.params;
+
+  const [lat, long] = latlong.split(',');
+
+  if (!lat || !long) {
+    return next(
+      new AppError(
+        'Please provide latitude and longtitude in the format lat,long',
+      ),
+      400,
+    );
+  }
+
+  // distanceMultiplier default : meters
+  const multiplier = unit === 'mi' ? 0.000621371192 : 0.001;
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Ponit',
+          coordinates: [long * 1, lat * 1],
+        },
+        distanceField: 'distance', // embedded to result
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: distances,
+    },
+  });
+});
+
 // @desc    Get tour around lat, long by distance
 // @route   GET api/v1/tour-within/:distance/center/:latlong/unit/:unit
 // @access  Public

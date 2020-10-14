@@ -193,11 +193,18 @@ tourSchema.post(/^find/, function(docs, next) {
 
 // AGGREGATE MIDDLEWARE
 tourSchema.pre('aggregate', function(next) {
+  if (Object.keys(this.pipeline()[0]).includes('$geoNear')) {
+    // geoNear ต้องอยู่ stage แรกของ aggregate
+    return next();
+  }
+
   // filter secretTour: true
   // เมื่อ run aggregate()
   this.pipeline().unshift({
     $match: { secretTour: { $ne: true } },
   });
+
+  // console.log(this.pipeline());
 
   next();
 });

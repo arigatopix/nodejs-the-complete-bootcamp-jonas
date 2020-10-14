@@ -25,6 +25,11 @@ router
   .route('/tour-within/:distance/center/:latlong/unit/:unit')
   .get(tourController.getTourWithin);
 
+// /distances/:latlong/unit/:unit
+router
+  .route('/distances/:latlong/unit/:unit')
+  .get(tourController.getDistances);
+
 router
   .route('/monthly-plan/:year')
   .get(
