@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
@@ -29,28 +30,28 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set sucurity HTTP Headers
-app.use(helmet());
+// app.use(helmet());
 
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", 'data:', 'blob:'],
-      baseUri: ["'self'"],
-      fontSrc: ["'self'", 'https:', 'data:'],
-      // scriptSrc: ["'self'", 'https://*.cloudflare.com'],
-      // scriptSrc: ["'self'", 'https://*.stripe.com'],
-      scriptSrc: ["'self'", 'https://*.mapbox.com'],
-      // frameSrc: ["'self'", 'https://*.stripe.com'],
-      objectSrc: ["'none'"],
-      styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-      workerSrc: ["'self'", 'data:', 'blob:'],
-      childSrc: ["'self'", 'blob:'],
-      imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'", 'blob:', 'https://*.mapbox.com'],
-      upgradeInsecureRequests: [],
-    },
-  }),
-);
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'", 'data:', 'blob:'],
+//       baseUri: ["'self'"],
+//       fontSrc: ["'self'", 'https:', 'data:'],
+//       scriptSrc: ["'self'", 'https://*.cloudflare.com'],
+//       scriptSrc: ["'self'", 'https://*.stripe.com'],
+//       scriptSrc: ["'self'", 'https://*.mapbox.com'],
+//       frameSrc: ["'self'", 'https://*.stripe.com'],
+//       objectSrc: ["'none'"],
+//       styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+//       workerSrc: ["'self'", 'data:', 'blob:'],
+//       childSrc: ["'self'", 'blob:'],
+//       imgSrc: ["'self'", 'data:', 'blob:'],
+//       connectSrc: ["'self'", 'blob:', 'https://*.mapbox.com'],
+//       upgradeInsecureRequests: [],
+//     },
+//   }),
+// );
 
 // Development Logging
 if (config.env === 'development') {
@@ -69,6 +70,7 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(bodyParser.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());

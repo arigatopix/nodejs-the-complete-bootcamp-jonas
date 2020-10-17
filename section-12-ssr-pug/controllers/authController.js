@@ -207,10 +207,17 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
+  let token;
   if (
-    !req.headers.authorization ||
-    !req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
   ) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
+  if (!token) {
     return next(
       new AppError(
         'You are not logged in! Please log in to get access',
@@ -218,7 +225,6 @@ exports.protect = catchAsync(async (req, res, next) => {
       ),
     );
   }
-  const token = req.headers.authorization.split(' ')[1];
 
   // 2) Verification token
   const decoded = await promisify(jwt.verify)(
