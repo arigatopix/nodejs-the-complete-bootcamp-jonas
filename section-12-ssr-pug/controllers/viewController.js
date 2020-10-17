@@ -20,12 +20,10 @@ exports.getTour = catchAsync(async (req, res) => {
     slug: req.params.slug,
   }).populate({ path: 'reviews', fields: 'review rating user' });
 
-  console.log(tour);
-
   // 2) Build template
   // 3) Render that template using your data from 1)
   res.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
+    title: tour.name,
     tour,
   });
 });
