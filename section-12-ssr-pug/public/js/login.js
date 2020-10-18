@@ -31,10 +31,11 @@ export const logout = async () => {
       url: 'http://localhost:3000/api/v1/users/logout',
     });
     if (res.data.status === 'success') {
-      showAlert('success');
+      showAlert('success', 'Logged out');
 
       // re-load page เพื่อให้หน้าที่ถูก login เปลี่ยนไป
-      location.reload(true);
+      // location.reload(true);
+      location.assign('/');
     }
   } catch (err) {
     showAlert('error', 'Error logging out! Try again.');
