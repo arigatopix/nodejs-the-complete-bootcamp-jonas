@@ -1,4 +1,5 @@
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -19,16 +20,19 @@ const filterObj = (obj, ...allowedFileds) => {
 
 // * Multer middleware
 // save to disk
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users/');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users/');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
 
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  },
-});
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+// save with buffer
+const multerStorage = multer.memoryStorage();
 
 // filter specific
 const multerFilter = (req, file, cb) => {
@@ -47,7 +51,28 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+// upload single photo middleware
 exports.uploadUserPhoto = upload.single('photo');
+
+// resize photo middleware
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) next();
+
+  // defind req.file.filename เพราะ middleware ถัดไปต้องใช้
+  // มันหายไปเพราะเดิมใช้ multer.disStorage()
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  // resize with image processors
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({
+      quality: 90,
+    })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+};
 
 // @desc    Get Me
 // @route   GET /api/v1/users/getme

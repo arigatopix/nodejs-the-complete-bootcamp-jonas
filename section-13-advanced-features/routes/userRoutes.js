@@ -20,7 +20,11 @@ router
 
 router
   .route('/updateMe')
-  .patch(userController.uploadUserPhoto, userController.updateMe);
+  .patch(
+    userController.uploadUserPhoto,
+    userController.resizeUserPhoto,
+    userController.updateMe,
+  );
 router.route('/deleteMe').delete(userController.deleteMe);
 router.route('/updatepassword').patch(authController.updatePassword);
 
