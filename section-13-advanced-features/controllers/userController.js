@@ -90,12 +90,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filterd out unwanted fields
   // update เฉพาะ field ที่อนุญาต
-  const filterdBody = filterObj(req.body, 'name', 'email');
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
 
   // 3) Update user document
   const user = await User.findByIdAndUpdate(
     req.user.id,
-    filterdBody,
+    filteredBody,
     {
       new: true,
       runValidators: true,
