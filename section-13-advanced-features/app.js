@@ -18,6 +18,7 @@ const viewRoutes = require('./routes/viewRoutes');
 const tourRoutes = require('./routes/tourRoutes');
 const userRoutes = require('./routes/userRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
@@ -97,6 +98,7 @@ app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 
 // Handling Unhandle Routes
 app.all('*', (req, res, next) => {

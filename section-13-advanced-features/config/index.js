@@ -38,6 +38,11 @@ module.exports = {
     sendgridPassword: process.env.SENDGRID_PASSWORD,
   },
   /**
+   * Stripe */
+  stripe: {
+    secret: process.env.STRIPE_SECRET_KEY,
+  },
+  /**
    * API configs */
   api: {
     prefix: '/api',
