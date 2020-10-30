@@ -5,7 +5,7 @@ const config = require('../config');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/sendEmail');
+const Email = require('../utils/sendEmail');
 
 // Generate Token
 const signToken = id => {
@@ -52,6 +52,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     password,
     passwordConfirm,
   });
+
+  // Send email to new user
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(user, url).sendWelcome();
 
   // create token
   createSendToken(user, 201, res);
@@ -121,11 +125,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}.\nIf you didn't forget your password, please ignore thes email!`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'You password reset token (valid for 10 min)',
-      message,
-    });
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: 'You password reset token (valid for 10 min)',
+    //   message,
+    // });
   } catch (err) {
     // กรณีส่ง email ไม่สำเร็จ
     user.passwordResetToken = undefined;
