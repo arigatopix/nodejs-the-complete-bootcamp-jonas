@@ -34,6 +34,8 @@ module.exports = {
     user: process.env.EMAIL_USER,
     password: process.env.EMAIL_PASSWORD,
     from: process.env.EMAIL_FROM,
+    sendgridUsername: process.env.SENDGRID_USERNAME,
+    sendgridPassword: process.env.SENDGRID_PASSWORD,
   },
   /**
    * API configs */
