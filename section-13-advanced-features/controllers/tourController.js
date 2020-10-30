@@ -35,11 +35,45 @@ exports.uploadTourImages = upload.fields([
 // upload.array('images', 3) -> req.file
 // upload.single('imageCover') -> req.files
 
-exports.resizeTourImages = (req, res, next) => {
-  if (!req.files) next();
-  console.log(req.files);
+// Resize middleware
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) next();
+
+  // 1) Image cover
+  req.body.imageCover = `tour-${
+    req.params.id
+  }-${Date.now()}-cover.jpeg`;
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({
+      quality: 90,
+    })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2) Images ได้จาก req.files.images เป็น array
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i +
+        1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({
+          quality: 90,
+        })
+        .toFile(`public/img/tours/${filename}`);
+
+      // push to images array
+      req.body.images.push(filename);
+    }),
+  );
+
   next();
-};
+});
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
