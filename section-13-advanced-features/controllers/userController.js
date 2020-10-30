@@ -55,7 +55,7 @@ const upload = multer({
 exports.uploadUserPhoto = upload.single('photo');
 
 // resize photo middleware
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) next();
 
   // defind req.file.filename เพราะ middleware ถัดไปต้องใช้
@@ -63,7 +63,7 @@ exports.resizeUserPhoto = (req, res, next) => {
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   // resize with image processors
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({
@@ -72,7 +72,7 @@ exports.resizeUserPhoto = (req, res, next) => {
     .toFile(`public/img/users/${req.file.filename}`);
 
   next();
-};
+});
 
 // @desc    Get Me
 // @route   GET /api/v1/users/getme
