@@ -1079,7 +1079,7 @@ body {
 
 .card-container {
   max-width: 120rem;
-  margin: 0 auto;
+  margin: 50px auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 7rem;
