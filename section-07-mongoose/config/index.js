@@ -17,8 +17,11 @@ module.exports = {
    * PORT */
   port: parseInt(process.env.PORT, 10),
   /**
+   * MONGODB Connection */
+  mongoURI: process.env.MONGO_URI,
+  /**
    * API configs */
   api: {
-    prefix: '/api',
-  },
+    prefix: '/api'
+  }
 };
