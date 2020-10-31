@@ -32,4 +32,10 @@ router.post(
   viewController.updateUserData,
 );
 
+router.get(
+  '/my-tours',
+  authController.protect,
+  viewController.getMyTours,
+);
+
 module.exports = router;
