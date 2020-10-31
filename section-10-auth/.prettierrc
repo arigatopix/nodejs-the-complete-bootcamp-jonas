@@ -1,0 +1,7 @@
+{
+  "singleQuote": true,
+  "editor.formatOnSave": true,
+  "semi": true,
+  "trailingComma": "all",
+  "printWidth": 70
+}

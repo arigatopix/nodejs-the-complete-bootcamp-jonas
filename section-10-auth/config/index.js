@@ -20,8 +20,23 @@ module.exports = {
    * MONGODB Connection */
   mongoURI: process.env.MONGO_URI,
   /**
+   * JWT Secret */
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+    cookieExpiresIn: process.env.JWT_COOKIE_EXPIRES_IN,
+  },
+  /**
+   * Send mail */
+  email: {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    user: process.env.EMAIL_USER,
+    password: process.env.EMAIL_PASSWORD,
+  },
+  /**
    * API configs */
   api: {
-    prefix: '/api'
-  }
+    prefix: '/api',
+  },
 };
