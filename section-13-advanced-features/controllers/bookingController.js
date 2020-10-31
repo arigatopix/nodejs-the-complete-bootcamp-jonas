@@ -4,6 +4,7 @@ const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handleFactory');
 
 // @desc    Log user in
 // @route   GET /api/v1/bookings/checkout-session/:tourId
@@ -58,3 +59,28 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // Redirect
   res.redirect(req.originalUrl.split('?')[0]);
 });
+
+// @desc    Get all bookings
+// @route   GET /api/v1/bookings/
+// @access  Private
+exports.getAllBookings = factory.getAll(Booking);
+
+// @desc    Get booking
+// @route   GET /api/v1/bookings/:bookingId
+// @access  Private
+exports.getBooking = factory.getOne(Booking);
+
+// @desc    Create booking
+// @route   POST /api/v1/bookings/
+// @access  Private
+exports.createBooking = factory.createOne(Booking);
+
+// @desc    Update Booking
+// @route   PATCH /api/v1/bookings/:bookingId
+// @access  Private
+exports.updateBooking = factory.updateOne(Booking);
+
+// @desc    Delete Booking
+// @route   DELETE /api/v1/bookings/:bookingId
+// @access  Private
+exports.deleteBooking = factory.deleteOne(Booking);
