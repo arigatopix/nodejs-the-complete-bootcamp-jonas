@@ -16,7 +16,7 @@ process.on('uncaughtException', err => {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
 
   console.log('MongoDB Connected...');
@@ -25,7 +25,9 @@ process.on('uncaughtException', err => {
 const PORT = config.port || 3000;
 
 const server = app.listen(PORT, () => {
-  console.log(`Sever running on port : ${PORT}`);
+  console.log(
+    `Sever in ${config.env} mode and running on port : ${PORT}`,
+  );
 });
 
 // Global unhandledRejection

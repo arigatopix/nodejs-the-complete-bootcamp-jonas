@@ -100,8 +100,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 // @route   PATCH /api/v1/users/updateMe
 // @access  Private
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
+  // console.log(req.file);
+  // console.log(req.body);
   // 1) Create error if user POSTs password data
   // ต้องการแยก routes ชัดเจน
   if (req.body.password || req.body.passwordConfirm) {

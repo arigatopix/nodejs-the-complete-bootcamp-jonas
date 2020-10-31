@@ -8,6 +8,7 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const morgan = require('morgan');
+const compression = require('compression');
 const config = require('./config');
 
 const AppError = require('./utils/appError');
@@ -97,6 +98,9 @@ app.use(
     ],
   }),
 );
+
+// Compress text json html send to client
+app.use(compression());
 
 app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRoutes);

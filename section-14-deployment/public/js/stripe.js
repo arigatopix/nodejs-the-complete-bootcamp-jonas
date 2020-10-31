@@ -11,7 +11,7 @@ export const bookTour = async tourId => {
   try {
     // 1) Get checkout session from API
     const res = await axios(
-      `http://localhost:3000/api/v1/bookings/checkout-session/${tourId}`,
+      `/api/v1/bookings/checkout-session/${tourId}`,
     );
     // console.log(res);
 
@@ -20,7 +20,7 @@ export const bookTour = async tourId => {
       sessionId: res.data.session.id,
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     showAlert('error', err);
   }
 };
