@@ -30,33 +30,62 @@ const handleJWTError = () => {
   return new AppError(`${message}`, 401);
 };
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    // A) API ERROR
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      error: err,
+      stack: err.stack,
+    });
+  }
+
+  // B) RENDERED WEBSITE
+  console.error('ERROR :', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Somthing went wrong!',
     message: err.message,
-    error: err,
-    stack: err.stack,
   });
 };
 
-const sendErrorProd = (err, res) => {
-  // Operational, trusted error: send message to client
-  if (err.isOperatioal) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-  } else {
+const sendErrorProd = (err, req, res) => {
+  // A) API ERROR
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperatioal) {
+      // Operational, trusted error: send message to client
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+
     // Programming or other unknwn error: don't leak error details
     // 1) Log error
     console.error('ERROR :', err);
 
     // 2) Send generic message
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Somthing went very wrong!',
     });
   }
+
+  // B) RENDERED WEBSITE
+  if (err.isOperatioal) {
+    // Operational, trusted error: send message to client
+    return res.status(err.statusCode).render('error', {
+      title: 'Somthing went wrong!',
+      message: err.message,
+    });
+  }
+
+  // Programming or other unknwn error: don't leak error details
+  console.error('ERROR :', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Somthing went wrong!',
+    message: 'Please try again leter.',
+  });
 };
 
 module.exports = (err, req, res, next) => {
@@ -66,10 +95,12 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (config.env === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (config.env === 'production') {
     // copy err obj.
     let error = { ...err };
+    // * ทำไมไม่ copy message ไม่รู้เลยต้อง copy
+    error.message = err.message;
 
     // MongoDB and mongoose Error
     // เมื่อเจออาการ CastError
@@ -83,6 +114,6 @@ module.exports = (err, req, res, next) => {
     // JWT error
     if (err.name === 'JsonWebTokenError') error = handleJWTError();
 
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
