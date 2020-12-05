@@ -9,6 +9,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const morgan = require('morgan');
 const compression = require('compression');
+const cors = require('cors');
 const config = require('./config');
 
 const AppError = require('./utils/appError');
@@ -30,6 +31,22 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // GLOBAL MIDDLEWARES
+// Implement CORS
+// Access-Control-Allow-Origin *
+app.use(cors());
+// allow natours.com fetch resource from api.natours.com
+// app.use(
+//   cors({
+//     origin: 'https://www.natours.com',
+//   }),
+// );
+
+// Allow Non-Simple method
+// allow all method, all route
+app.options('*', cors());
+// specific route
+// app.options('/api/v1/tours/:id', cors());
+
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
