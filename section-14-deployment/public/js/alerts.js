@@ -8,7 +8,7 @@ export const hideAlert = () => {
 };
 
 // type is 'success' or 'error'
-export const showAlert = (type, msg) => {
+export const showAlert = (type, msg, time = 5) => {
   hideAlert();
   const markup = `<div class="alert alert--${type}">${msg}</div>`;
   // แสดงผลหลัง body tag
@@ -18,6 +18,6 @@ export const showAlert = (type, msg) => {
 
   // disapear after 5 second
   window.setTimeout(() => {
-    hideAlert();
-  }, 5000);
+    hideAert();
+  }, time * 1000);
 };
