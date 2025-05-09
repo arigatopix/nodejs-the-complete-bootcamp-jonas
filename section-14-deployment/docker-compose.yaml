@@ -1,0 +1,47 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: express-app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - tour-networks
+    command: >
+      sh -c "npm install && npm run dev"
+    env_file:
+      - ./config/config.env
+
+  mongo:
+    image: mongo
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - tour-data:/data/db
+    networks:
+      - tour-networks
+  mailserver:
+    image: rnwood/smtp4dev
+    restart: always
+    ports:
+      - "8080:80"
+      - "2525:25"
+      - "1143:143"
+    volumes:
+      - tour-data:/smtp4dev
+    environment:
+      - ServerOptions__Urls=http://*:80
+    networks:
+      - tour-networks
+
+networks:
+  tour-networks:
+
+volumes:
+  tour-data:
